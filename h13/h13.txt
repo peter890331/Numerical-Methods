@@ -1,0 +1,84 @@
+x=[2 2.5 3 4];
+y=[5 7 6.5 2];
+xx=3.4;
+n = length(x);
+if length(y)~=n, error('x and y must be same length'); end
+b = zeros(n,n);
+% assign dependent variables to the first column of b.
+b(:,1) = y(:); % the (:) ensures that y is a column vector.
+for j = 2:n
+  for i = 1:n-j+1
+    b(i,j) = (b(i+1,j-1)-b(i,j-1))/(x(i+j-1)-x(i));
+  end
+end
+% use the finite divided differences to interpolate
+xt = 1;
+yint = b(1,1);
+for j = 1:n-1
+  xt = xt*(xx-x(j));
+  yint = yint+b(1,j+1)*xt;
+  yy(j)=yint;
+end
+
+p1 = polyfit([x 3.4],[y yy(1)],1);
+x1 = [0:0.1:5];
+y1 = polyval(p1,x1);
+p2 = polyfit([x 3.4],[y yy(2)],2);
+x2 = [0:0.1:5];
+y2 = polyval(p2,x2);
+p3 = polyfit([x 3.4],[y yy(3)],3);
+x3 = [0:0.1:5];
+y3 = polyval(p3,x3);
+figure
+plot(x,y,'o')
+hold on
+plot(3.4,yy(1),'or',3.4,yy(2),'or',3.4,yy(3),'or',x1,y1,'r',x2,y2,'b',x3,y3,'g')
+hold off
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% x -> (Avg(x) / Sum(pt-x))
+% 2 2.5 3 5 -> 3.12 / 4.3
+% 2 2.5 4 5 -> 3.38 / 4.5
+% 2 3 4 5 -> 3.5 / 4
+% 2.5 3 4 5 -> 3.6 / 3.5
+x = [2.5 3 4 5];
+y = [7 6.5 2 0];
+xx=3.4;
+n = length(x);
+if length(y)~=n, error('x and y must be same length'); end
+b = zeros(n,n);
+% assign dependent variables to the first column of b.
+b(:,1) = y(:); % the (:) ensures that y is a column vector.
+for j = 2:n
+  for i = 1:n-j+1
+    b(i,j) = (b(i+1,j-1)-b(i,j-1))/(x(i+j-1)-x(i));
+  end
+end
+% use the finite divided differences to interpolate
+xt = 1;
+yint = b(1,1);
+for j = 1:n-1
+  xt = xt*(xx-x(j));
+  yint = yint+b(1,j+1)*xt;
+  yy(j)=yint;
+end
+fprintf('f(3.4) Order 1 = %.4f\n', yy(1));
+fprintf('f(3.4) Order 2 = %.4f\n', yy(2));
+fprintf('f(3.4) Order 3 = %.4f\n', yy(3));
+
+
+k = 0; xp = 1:0.05:5;
+for t = xp
+    k = k+1;
+    yp1(k,:) = Newtint(x,y,t);
+    yp2(k,:) = Newtint([2.5 3 4],[7 6.5 2],t);
+    yp3(k,:) = Newtint([2.5 3],[7 6.5],t);
+end
+
+plot(x,y,"o",3.4,yy(1),"og",3.4,yy(2),"og",3.4,yy(3),"og")
+hold on
+plot(xp,yp1(:,1))
+plot(xp,yp2(:,1))
+plot(xp,yp3(:,1))
+hold off

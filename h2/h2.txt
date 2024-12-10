@@ -1,0 +1,7 @@
+>> [root,ea,iter]=bisect(@f,0.1,0.2,0.1,10)
+
+>> [root,ea,iter]=False(@f,0.1,0.2,0.1,10)
+
+>> [root,ea,iter]=bisect(@B,0,5,0.0001,50)
+>> [root,ea,iter]=bisect(@B,5,8,0.0001,50)
+>> [root,ea,iter]=bisect(@B,8,10,0.0001,50)

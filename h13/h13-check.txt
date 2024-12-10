@@ -1,0 +1,69 @@
+% x -> (Avg(x) / Sum(pt-x))
+% 2 2.5 3 5 -> 3.12 / 4.3
+% 2 2.5 4 5 -> 3.38 / 4.5
+% 2 3 4 5 -> 3.5 / 4
+% 2.5 3 4 5 -> 3.6 / 3.5
+x = [2.5 3 4 5];
+y = [7 6.5 2 0];
+xx=3.4;
+n = length(x);
+if length(y)~=n, error('x and y must be same length'); end
+b = zeros(n,n);
+% assign dependent variables to the first column of b.
+b(:,1) = y(:); % the (:) ensures that y is a column vector.
+for j = 2:n
+  for i = 1:n-j+1
+    b(i,j) = (b(i+1,j-1)-b(i,j-1))/(x(i+j-1)-x(i));
+  end
+end
+% use the finite divided differences to interpolate
+xt = 1;
+yint = b(1,1);
+for j = 1:n-1
+  xt = xt*(xx-x(j));
+  yint = yint+b(1,j+1)*xt;
+  yy(j)=yint;
+end
+fprintf('f(3.4) Order 1 = %.4f\n', yy(1));
+fprintf('f(3.4) Order 2 = %.4f\n', yy(2));
+fprintf('f(3.4) Order 3 = %.4f\n', yy(3));
+
+
+k = 0; xp = 1:0.05:5;
+for t = xp
+    k = k+1;
+    yp1(k,:) = Newtint(x,y,t);
+    yp2(k,:) = Newtint([2.5 3 4],[7 6.5 2],t);
+    yp3(k,:) = Newtint([2.5 3],[7 6.5],t);
+end
+
+plot(x,y,"o",3.4,yy(1),"og",3.4,yy(2),"og",3.4,yy(3),"og")
+hold on
+plot(xp,yp1(:,1))
+plot(xp,yp2(:,1))
+plot(xp,yp3(:,1))
+hold off
+
+/////////////////////////////////////////////////////////////////
+
+% Inverse interpolation, NMCh15 p17
+x = [3 4 5];
+y = [0.9 0.941176 0.961538];
+c = 0.93;
+
+p = polyfit(x,y,2);
+f = @(x) p(1)*x^2+p(2)*x+p(3)-c;
+
+xl = 3; xu = 4;
+root2 = secant(f, xl, xu);
+
+x = [2 3 4 5];
+y = [0.8 0.9 0.941176 0.961538];
+
+p = polyfit(x,y,3);
+f = @(x) p(1)*x^3+p(2)*x^2+p(3)*x+p(4)-c;
+root3 = secant(f, xl, xu);
+
+% f = x^2/(1+x^2) -> 0.07x^2 = 0.93
+fprintf("x = %.4f, ", sqrt(0.93/0.07));
+fprintf("Root Order 2 = %.4f, 3 = %.4f\n", root2, root3);

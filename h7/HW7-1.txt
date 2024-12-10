@@ -1,0 +1,9 @@
+x=[0.7;0.7];
+c=0;
+while(1)
+	f=[5*cos(x(1))+6*cos(x(1)+x(2))-10; 5*sin(x(1))+6*sin(x(1)+x(2))-4]
+	j=[-5*sin(x(1))-6*sin(x(1)+x(2)) -6*sin(x(1)+x(2)); 5*cos(x(1))+6*cos(x(1)+x(2)) 6*cos(x(1)+x(2))];
+	x=x-inv(j)*f
+	c=c+1;
+	if abs(f)<0.01 break;end
+end

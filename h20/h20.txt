@@ -1,0 +1,129 @@
+%https://www.slader.com/discussion/question/solve-the-following-initial-value-problem-over-the-interval-from-t-0-to-2-where-y-0-1-display-all-yo/
+
+%textbook p560
+
+------------------------------------------------------------
+
+%第一小(解析解)
+yy=@(t) exp((((t.^3)./3)-1.1.*t));
+tt=linspace(0,2,100);
+yy(tt);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%第二小
+function [t,y] = eulode(dydt,tspan,y0,h)
+ti = tspan(1); tf = tspan(2);
+t = (ti:h:tf)'; 
+n = length(t);
+
+y = y0*ones(n,1); %preallocate y to improve efficiency
+for i = 1:n-1 %implement Euler's method
+%Ch20,p7
+y(i+1) = y(i) + dydt(t(i),y(i))*(t(i+1)-t(i));
+end
+
+
+dydt=@(t,y)(y.*t.^2)-(1.1).*y;
+[te05,ye05] = eulode(dydt,[0 2],1,0.5);
+%disp([te05,ye05]);
+
+dydt=@(t,y)(y.*t.^2)-(1.1).*y;
+[te025,ye025] = eulode(dydt,[0 2],1,0.25);
+%disp([te025,ye025]);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%第三小
+function [t,y] = midpoint(dydt,tspan,y0,h)
+halfh = h / 2;
+y(1,:) = y0;
+t(1) = tspan(1);
+for i = 1 : (tspan(2)-tspan(1))/h
+%textbook p566,p567
+    t(i+1) = t(i) + h;
+    z = y(i,:) + halfh * dydt(t(i),y(i,:));
+    y(i+1,:) = y(i,:) + h * dydt(t(i)+halfh,z);
+end;
+
+
+dydt=@(t,y)(y.*t.^2)-(1.1).*y;
+[tm05,ym05] = midpoint(dydt,[0 2],1,0.5);
+%disp([tm05,ym05]);
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%第五小
+
+function [tp,yp] = rk4(dydt,tspan,y0,h)
+	ti = tspan(1);tf = tspan(2);
+		t = (ti:h:tf)';
+
+	tt = ti; y(1,:) = y0;
+	np = 1; tp(np) = tt; yp(np,:) = y(1,:);
+	i=1;
+	while(1)
+		tend = t(np+1);
+
+	while(1)
+		if tt+h>tend,h = tend-tt;end
+		%Ch20,p13
+		k1 = dydt(tt,y(i,:))'; 
+		ymid = y(i,:) + k1.*h./2;
+		k2 = dydt(tt+h/2,ymid)'; 
+		ymid = y(i,:) + k2*h/2;
+		k3 = dydt(tt+h/2,ymid)'; 
+		yend = y(i,:) + k3*h;
+		k4 = dydt(tt+h,yend)'; 
+		phi = (k1+2*(k2+k3)+k4)/6;
+		y(i+1,:) = y(i,:) + phi*h;
+		tt = tt+h;
+		i=i+1;
+		if tt>=tend,break,end
+	end
+	np = np+1; tp(np) = tt; yp(np,:) = y(i,:);
+	if tt>=tf,break,end
+    end
+end
+
+
+dydt=@(t,y)(y.*t.^2)-(1.1).*y;
+[t405,y405] = rk4(dydt,[0 2],1,0.5);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%plot
+figure(1);
+plot(tt,yy(tt),"-b",te05,ye05,"-*r",te025,ye025,"-*g",tm05,ym05,"-*m",t405,y405,"-*c")
+legend({"Analytically","Euler’s method with h=0.5","Euler’s method with h=0.25",...
+"Midpoint method with h=0.5","RK4 method with h=0.5"},"Location","northwest")
+
+%誤差值
+ee05=abs(yy(te05)-ye05);
+ee025=abs(yy(te025)-ye025);
+em05=abs(yy(tm05')-ym05);
+e405=abs(yy(t405')-y405);
+
+figure(2);
+plot(te05,ee05,"-r",te025,ee025,"-g",tm05,em05,"-m",t405,e405,"-c")
+legend({"Euler’s method with h=0.5","Euler’s method with h=0.25",...
+"Midpoint method with h=0.5","RK4 method with h=0.5"},"Location","northwest")
+
+///////////////////////////////////////////////////////////////////////
+
+k1=3000;
+k2=2400;
+k3=1800;
+m1=12000;
+m2=10000;
+m3=8000;
+syms t x
+dxdt=@(t,x)[x(4);x(5);x(6); -k1/m1*x(1)+k2/m1*(x(2)-x(1)); k2/m2*(x(1)-x(2))+k3/m2*(x(3)-x(2));k3/m3*(x(2)-x(3))];
+[t xa]=ode45(dxdt,[0 20],[0 0 0 1 0 0]);
+figure(1);
+plot(t,xa(:,1),t,xa(:,2),t,xa(:,3))
+xlabel("t"),ylabel("velocity")
+figure(2);
+plot(t,xa(:,4),t,xa(:,5),t,xa(:,6))
+xlabel("t"),ylabel("displacement")

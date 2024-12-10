@@ -1,0 +1,60 @@
+x = [2.5 3 4 5];
+y = [7 6.5 2 0];
+xx=3.4;
+
+y3 = Newtint(x,y,xx);
+y2 = Newtint([2.5 3 4],[7 6.5 2],xx);
+y1 = Newtint([3 4],[6.5 2],xx);
+
+fprintf('f(3.4) Order 1 = %.4f\n', y1);
+fprintf('f(3.4) Order 2 = %.4f\n', y2);
+fprintf('f(3.4) Order 3 = %.4f\n', y3);
+
+
+k = 0; xp = 1:0.05:5;
+for t = xp
+    k = k+1;
+    yp3(k,:) = Newtint(x,y,t);
+    yp2(k,:) = Newtint([2.5 3 4],[7 6.5 2],t);
+    yp1(k,:) = Newtint([3 4],[6.5 2],t);
+end
+
+plot(x,y,"o",3.4,y1,"og",3.4,y2,"og",3.4,y3,"og")
+hold on
+plot(xp,yp1(:,1))
+plot(xp,yp2(:,1))
+plot(xp,yp3(:,1))
+hold off
+
+/////////////////////////////////////////
+
+format long e
+
+z=@(x) x.^2./(1+x.^2);
+xi=linspace(0,5,101);
+yi=z(xi);
+x0=Newtint(yi,xi,0.93);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+x = [3 4 5];
+y = [0.9 0.941176 0.961538];
+
+p = polyfit(x,y,2);
+f2 = @(x) p(1).*x.^2+p(2).*x+p(3)-0.93;
+yi2=f2(xi);
+root2=Newtint(yi2,xi,0);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+x = [2 3 4 5];
+y = [0.8 0.9 0.941176 0.961538];
+
+p = polyfit(x,y,3);
+f3 = @(x) p(1).*x.^3+p(2).*x.^2+p(3).*x+p(4)-0.93;
+yi3=f3(xi);
+root3=Newtint(yi3,xi,0);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+fprintf("x0 = %.6f, root2 = %.6f, root3 = %.6f\n", x0, root2, root3);

@@ -1,0 +1,27 @@
+function [v]=jump(t)
+m=68.1;
+g=9.81;
+cd=0.25;
+v=sqrt(g.*m/cd).*tanh(sqrt(g.*cd/m).*t)
+plot(t,v)
+end
+
+
+>> t=[0:1:12];
+>> jump(t)
+
+///////////////////////////////////////////////////////////////////////
+
+function [v T] = compute(x,T)
+a = taylor(cos(x),x,0,'Order',T)
+x = pi/4
+y = subs(a)
+v = abs(vpa(((cos(pi/4)-y)/cos(pi/4))))
+end
+
+
+
+>> for i=1:1:9
+[v T]=compute(pi/4,i)
+if v<0.001,break,end
+end

@@ -1,0 +1,94 @@
+V = [ 2 3 4 5 7 10];
+A = [5.2 7.8 10.7 13 19.3 27.5];
+n = length(V);
+mV = mean(V); %x
+mA = mean(A); %y
+
+b = sum((V-mV).*(A-mA))/sum((V-mV).^2);
+a = mA - b*mV; %ºI¶Z
+RL = @(x) a+b*x; % Regression line equation
+v = 3.5;
+i = RL(v); % current when v =3.5;
+fprintf('i = %f if v = %f ',i,v);
+x = 1:0.1:11;
+y = RL(x);
+plot(V, A, 'ob');
+hold on
+plot(x,y,'r');
+plot(v,i,'*g');
+title('a');
+
+St = sum((A-mA).^2);
+Sr = sum((A-a-b*V).^2);
+R2 = (St-Sr)/St
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+figure(2);
+b = sum((V).*(A))/sum((V).^2);
+RL = @(x) b*x; 
+v = 3.5; 
+i = RL(v);
+fprintf('i = %f if v = %f ',i,v);
+x = 1:0.1:11;
+y = RL(x);
+plot(V, A, 'ob');
+hold on
+plot(x,y,'r');
+plot(v,i,'*g');
+title('b');
+
+St = sum((A-mA).^2);
+Sr = sum((A-b*V).^2);
+R2 = (St-Sr)/St
+
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+§@¹ú(fit)¡G
+
+clc;
+clear all;
+%Given data
+x = [4 8 12 16 20 24];
+y = [1600 1320 1000 890 650 560];
+
+%Create exponential decay model,
+fun = @(X, x)X(1)*exp(X(2)*x);
+
+%Fit the model
+x0 = [100 -1];
+X = lsqcurvefit(fun, x0, x, y);
+
+%Plot
+times = linspace(0,50);
+plot(x, y, 'ko', times, fun(X, times), 'b-');
+
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+clear;clc;
+format long e
+V = [4 8 12 16 20 24];
+A = [1600 1320 1000 890 650 560];
+A1 = log(A);
+n = length(V);
+mV = mean(V); %x
+mA1 = mean(A1); %y
+
+b = sum((V-mV).*(A1-mA1))/sum((V-mV).^2);
+a = mA1 - b*mV; %ºI¶Z
+RL = @(x) exp(a)*exp(b*x); % Regression line equation
+x = 0:0.1:50;
+y = RL(x)
+plot(V, A, 'ob');
+hold on
+plot(x,y,'r');
+title('a');
+
+RL(0)
+yi = 200 ;
+xi = interp1(y,x,yi)
+
+St = sum((A1-mA1).^2);
+Sr = sum((A1-a-b*V).^2);
+R2 = (St-Sr)/St

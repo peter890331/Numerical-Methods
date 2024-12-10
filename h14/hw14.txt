@@ -1,0 +1,44 @@
+%第一題
+x=linspace(-1,1,5);
+y=1./(1+25*x.^2);
+xx=linspace(-1,1);
+p=polyfit(x,y,4);
+y4=polyval(p,xx);
+yr=1./(1+25*xx.^2);
+cs=csapi(x,y);
+fnplt(cs);
+hold on 
+plot(x,y,'o',xx,y4,'-',xx,yr,'--');
+hold off
+%11 points get good fit
+
+////////////////////////////////////////
+%ch16
+%第二題
+%Cubic spline with not-a-knot end conditions
+t=linspace(0,2*pi,8)
+y=(sin(t)).^2;
+tt=linspace(0,2*pi);
+y1=spline(t,y,tt);      	%第一題
+----------------------------------------
+%計算一階導數的值
+syms x
+y=(sin(x)).^2;
+diff(y);
+yk=@(x)2*cos(x)*sin(x);
+yk(0)                   	%df(1)&df(n)  
+-----------------------------------------
+%Cubic spline with clamped condition
+%Piecewise cubic hermite interpolation
+yc=[0 y 0];
+tt=linspace(0,2*pi);
+y2=spline(t,yc,tt);     	%第二題
+y3=interp1(t,y,tt,'pchip');     %第三題
+
+y0=(sin(tt)).^2;        	%無限點帶公式
+plot(t,y,'o',tt,y0,'-y',tt,y1,'.-b',tt,y2,'--r',tt,y3,'-g')
+
+et1=abs(y0-y1);
+et2=abs(y0-y2);
+et3=abs(y0-y3);
+plot(tt,et1,'-r',tt,et2,'--b',tt,et3,'.-g')   %Et

@@ -1,0 +1,28 @@
+>> clear;
+NetList=[1 2 35; 2 3 30; 2 5 10; 3 4 8; 3 5 7; 4 5 15;5 6 5];
+Vnod=[1 10; 6 150];
+row=size(NetList,1);
+col=max([NetList(:,1) ; NetList(:,2)]);
+A=zeros(col,col);
+B=zeros(col,1);
+   for i=1:row
+         n1=NetList(i,1);
+         n2=NetList(i,2);
+         if n1~=n2
+            A(n1,n1)=A(n1,n1)+1/NetList(i,3);
+            A(n2,n2)=A(n2,n2)+1/NetList(i,3);
+            A(n1,n2)=A(n1,n2)-1/NetList(i,3);
+            A(n2,n1)=A(n2,n1)-1/NetList(i,3);
+        end
+   end
+   for i=1:size(Vnod,1) 
+          A(Vnod(i,1),:)=zeros(1,col);
+          A(Vnod(i,1),Vnod(i,1))=1;
+          B(Vnod(i,1),1)=Vnod(i,2);
+   end
+   Vo=A\B;
+   Vo
+
+////////////////////////////////////////////////
+
+>> T=rod(40, 200, 10, 0.05, 20, 10)
